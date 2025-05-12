@@ -2,6 +2,8 @@ import re
 import pandas as pd
 import os
 from datetime import datetime
+import numpy as np
+import natsort
 
 import requests
 import ipaddress
@@ -82,7 +84,7 @@ class Logs_Analysis():
     
     
     def get_last_log_data(self):
-        sorted_by_date = self.logs_df.sort_values(by='Time', ascending=False)
+        sorted_by_date = self.logs_df.sort_values(by='Time', ascending=False, key=lambda series: pd.Series([datetime.strptime(t, "[%d/%b/%Y:%H:%M:%S") for t in series]))
         first_seven_logs = sorted_by_date.head(7)
         logs_lst = df_result_to_list(first_seven_logs[['Time', 'Remote_IP', 'Operation']])
         formated_logs = []

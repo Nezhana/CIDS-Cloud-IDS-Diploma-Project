@@ -336,9 +336,9 @@ def TEMPORARY_parse_s3_log(file_path):
 
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import IsolationForest
-import matplotlib.pyplot as plt
-import seaborn as sns
+# from sklearn.ensemble import IsolationForest
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 
 
 
@@ -392,71 +392,74 @@ def main():
 
     logs_df = TEMPORARY_parse_s3_log('logs_example.txt')
 
-    ind = 0
-    for time in logs_df["Time"]:
-        fix_date = datetime.strptime(time, "%d/%b/%Y:%H:%M:%S")
-        # print(logs_df["Time"][ind])
-        logs_df.loc[ind, "Time"] = fix_date.strftime('%d-%m-%Y %H:%M:%S')
-        # logs_df["Time"][ind] = fix_date.strftime('%d-%m-%Y %H:%M:%S')
-        # print('\t', logs_df["Time"][ind])
-        ind += 1
+    # ind = 0
+    # for time in logs_df["Time"]:
+    #     fix_date = datetime.strptime(time, "%d/%b/%Y:%H:%M:%S")
+    #     # print(logs_df["Time"][ind])
+    #     logs_df.loc[ind, "Time"] = fix_date.strftime('%d-%m-%Y %H:%M:%S')
+    #     # logs_df["Time"][ind] = fix_date.strftime('%d-%m-%Y %H:%M:%S')
+    #     # print('\t', logs_df["Time"][ind])
+    #     ind += 1
 
-    print()
-    print(logs_df["Time"])
+    # print()
+    # print(logs_df["Time"])
 
-    df = pd.DataFrame()
+    # df = pd.DataFrame()
 
-    # # Побудова ознак для моделі
-    df["timestamp"] = pd.to_datetime(logs_df["Time"], dayfirst=True)
-    df["minute"] = df["timestamp"].dt.floor("T")
-    df["remote_IP"] = logs_df["Remote_IP"]
-    df["req_per_minute"] = df.groupby(["remote_IP", "minute"])["remote_IP"].transform("count")
-    df["hour"] = df["timestamp"].dt.hour
-    df["useragent_len"] = logs_df["User_Agent"].apply(len)
-    df["UserAgent"] = logs_df["User_Agent"]
-    df["Method"] = logs_df["Operation"]
+    # # # Побудова ознак для моделі
+    # df["timestamp"] = pd.to_datetime(logs_df["Time"], dayfirst=True)
+    # df["minute"] = df["timestamp"].dt.floor("T")
+    # df["remote_IP"] = logs_df["Remote_IP"]
+    # df["req_per_minute"] = df.groupby(["remote_IP", "minute"])["remote_IP"].transform("count")
+    # df["hour"] = df["timestamp"].dt.hour
+    # df["useragent_len"] = logs_df["User_Agent"].apply(len)
+    # df["UserAgent"] = logs_df["User_Agent"]
+    # df["Method"] = logs_df["Operation"]
 
-    # print(df)
+    # # print(df)
 
-    # Вибираємо ознаки
-    features = df[["req_per_minute", "hour", "useragent_len"]]
+    # # Вибираємо ознаки
+    # features = df[["req_per_minute", "hour", "useragent_len"]]
 
-    # Навчання моделі
-    model = IsolationForest(contamination=0.05, random_state=42)
-    df["anomaly"] = model.fit_predict(features)
-    print(df["anomaly"])
-    print()
+    # # Навчання моделі
+    # model = IsolationForest(contamination=0.05, random_state=42)
+    # df["anomaly"] = model.fit_predict(features)
+    # print(df["anomaly"])
+    # print()
 
-    # Виділення аномалій
-    anomalies = df[df["anomaly"] == -1]
-    print(anomalies)
+    # # Виділення аномалій
+    # anomalies = df[df["anomaly"] == -1]
+    # print(anomalies)
 
-    # Візуалізація
-    plt.figure(figsize=(10, 5))
-    sns.scatterplot(x="minute", y="req_per_minute", hue="anomaly", data=df, palette={1: "blue", -1: "red"})
-    plt.title("Аномалії в логах")
-    plt.xticks(rotation=45)
-    plt.tight_layout()
+    # # Візуалізація
+    # plt.figure(figsize=(10, 5))
+    # sns.scatterplot(x="minute", y="req_per_minute", hue="anomaly", data=df, palette={1: "blue", -1: "red"})
+    # plt.title("Аномалії в логах")
+    # plt.xticks(rotation=45)
+    # plt.tight_layout()
 
-    # plt.show()
+    # # plt.show()
 
-    # Повертаємо аномальні записи
-    print(anomalies[["timestamp", "remote_IP", "UserAgent", "Method", "req_per_minute", "anomaly"]])
+    # # Повертаємо аномальні записи
+    # print(anomalies[["timestamp", "remote_IP", "UserAgent", "Method", "req_per_minute", "anomaly"]])
 
-    print()
+    # print()
 
-    anomalous_rate = detect_request_rate_anomalies(df)
-    suspicious_uas = detect_suspicious_user_agents(df)
-    night_activity = detect_off_hours_activity(df)
+    # anomalous_rate = detect_request_rate_anomalies(df)
+    # suspicious_uas = detect_suspicious_user_agents(df)
+    # night_activity = detect_off_hours_activity(df)
 
-    print("🔺 Аномальна частота:")
-    print(anomalous_rate)
+    # print("🔺 Аномальна частота:")
+    # print(anomalous_rate)
 
-    print("\n🔺 Підозрілі User-Agent-и:")
-    print(suspicious_uas)
+    # print("\n🔺 Підозрілі User-Agent-и:")
+    # print(suspicious_uas)
 
-    print("\n🔺 Нічна активність:")
-    print(night_activity)
+    # print("\n🔺 Нічна активність:")
+    # print(night_activity)
+
+    sus_df = pd.read_csv("suspicious_log.csv")
+    print(pd.concat([logs_df, sus_df]).reset_index(drop=True).tail()['Remote_IP'])
 
 
 

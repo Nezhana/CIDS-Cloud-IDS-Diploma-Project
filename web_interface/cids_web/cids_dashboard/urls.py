@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('api/event-data/', views.api_event_data, name='api_event_data'),

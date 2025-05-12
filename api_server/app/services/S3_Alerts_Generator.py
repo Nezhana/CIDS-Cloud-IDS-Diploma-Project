@@ -55,26 +55,28 @@ class Alert_Generator():
     def study_model(self):
         df = pd.DataFrame()
 
+        sus_df = pd.read_csv("app/services/suspicious_log.csv")
+        with_sus_df = pd.concat([self.df, sus_df]).reset_index(drop=True)
+
         ind = 0
-        for time in self.df["Time"]:
-            print(time)
+        for time in with_sus_df["Time"]:
             try:
                 fix_date = datetime.strptime(time, "[%d/%b/%Y:%H:%M:%S")
-                self.df.loc[ind, "Time"] = fix_date.strftime('%d-%m-%Y %H:%M:%S')
+                with_sus_df.loc[ind, "Time"] = fix_date.strftime('%d-%m-%Y %H:%M:%S')
             except:
                 continue
             ind += 1
 
 
         # Побудова ознак для моделі
-        df["timestamp"] = pd.to_datetime(self.df["Time"], dayfirst=True)
+        df["timestamp"] = pd.to_datetime(with_sus_df["Time"], dayfirst=True)
         df["minute"] = df["timestamp"].dt.floor("min")
-        df["remote_IP"] = self.df["Remote_IP"]
+        df["remote_IP"] = with_sus_df["Remote_IP"]
         df["req_per_minute"] = df.groupby(["remote_IP", "minute"])["remote_IP"].transform("count")
         df["hour"] = df["timestamp"].dt.hour
-        df["useragent_len"] = self.df["User_Agent"].apply(len)
-        df["UserAgent"] = self.df["User_Agent"]
-        df["Method"] = self.df["Operation"]
+        df["useragent_len"] = with_sus_df["User_Agent"].apply(len)
+        df["UserAgent"] = with_sus_df["User_Agent"]
+        df["Method"] = with_sus_df["Operation"]
 
         # Вибираємо ознаки
         features = df[["req_per_minute", "hour", "useragent_len"]]
@@ -111,5 +113,78 @@ class Alert_Generator():
         print("\n🔺 Нічна активність:")
         print(night_activity)
 
-        return {"anomalous_rate": anomalous_rate, "suspicious_uas": suspicious_uas, "night_activity": night_activity}
+        alerts = {
+            "anomalous_rate": anomalous_rate.to_dict(),
+            "suspicious_uas": suspicious_uas.to_dict(),
+            "night_activity": night_activity.to_dict()
+            }
+        
+        formated_and_sorted_alerts = format_and_sort_alerts(alerts)
+
+        # return {"anomalous_rate": anomalous_rate, "suspicious_uas": suspicious_uas, "night_activity": night_activity}
+        return formated_and_sorted_alerts
+
+    
+def anomalous_rate_finder(alerts):
+    print(alerts)
+    anomalies = []
+    ind = 0
+    for key, item in alerts['z_score'].items():
+        if item >= 90.0:
+            # date = ' '.join(alerts['timestamp'][key].split('T')).replace('-', '/')
+            date = alerts['timestamp'][key].strftime('%d/%m/%Y %H:%M:%S')
+            message = 'DDoS Warning'
+            trigger = f"{(alerts['remote_IP'][key])} exceeded requests"
+            anomalies.append({ind: [ date, message, trigger ]})
+            ind += 1
+    return anomalies
+
+def suspicious_uas_formater(alerts):
+    anomalies = []
+    ind = 0
+    for key, item in alerts['timestamp'].items():
+        # date = ' '.join(alerts['timestamp'][key].split('T')).replace('-', '/')
+        date = alerts['timestamp'][key].strftime('%d/%m/%Y %H:%M:%S')
+        message = f"Access Denied: {(alerts['remote_IP'][key])}"
+        trigger = f"Unknown user agent: {(alerts['UserAgent'][key])}"
+        anomalies.append({ind: [ date, message, trigger ]})
+        ind += 1
+    return anomalies
+
+
+def night_activity_formater(alerts):
+    anomalies = []
+    ind = 0
+    for key, item in alerts['timestamp'].items():
+        # date = ' '.join(alerts['timestamp'][key].split('T')).replace('-', '/')
+        date = alerts['timestamp'][key].strftime('%d/%m/%Y %H:%M:%S')
+        message = f"Access Denied: {(alerts['remote_IP'][key])}"
+        trigger = f"Unusual activity timestamp"
+        anomalies.append({ind: [ date, message, trigger ]})
+        ind += 1
+    return anomalies
+
+
+def format_and_sort_alerts(alerts):
+    a_rate = anomalous_rate_finder(alerts['anomalous_rate'])
+    # print(a_rate)
+    sus_uas = suspicious_uas_formater(alerts['suspicious_uas'])
+    # print(sus_uas)
+    mal_act = night_activity_formater(alerts['night_activity'])
+    # print(mal_act)
+
+    all_alerts = [*a_rate, *sus_uas, *mal_act]
+    formated_alerts = [list(el.values())[0] for el in all_alerts]
+    # print(formated_alerts)
+    # sorted_alerts = sorted(formated_alerts, key=lambda x: x[0])
+    sorted_alerts = sorted(formated_alerts, key=lambda x: datetime.strptime(x[0], "%d/%m/%Y %H:%M:%S"))
+    # print(sorted_alerts)
+
+    result = []
+    ind = 1
+    for el in sorted_alerts:
+        result.append({'ID': ind, 'timestamp': el[0], 'message': el[1], 'trigger': el[2]})
+        ind += 1
+    
+    return result
 

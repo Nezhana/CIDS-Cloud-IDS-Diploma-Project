@@ -80,15 +80,33 @@ def api_top_requests(request):
 def api_alerts(request):
     # alerts = get_logs_data_from_api('get_malicious_ip_list')
 
-    alerts = [
-        "TEMPORARY ALERTS",
-        "17/03/2025 11:20:00 - Malicious IP address detected: 112.132.11.56",
-        "16/03/2025 12:20:00 - Malicious IP address detected: 112.132.11.56",
-        "16/03/2025 12:40:00 - DDoS Warning: 111.111.11.111 exceeded requests",
-        "14/03/2025 16:44:00 - Access Denied: Unknown user agent"
-    ]
+    alerts = get_alert_data_from_api()
+    print(alerts)
 
-    return JsonResponse({"alerts": alerts})
+    str_alerts = []
+    for el in alerts:
+        str_alerts.append(' '.join([el['timestamp'], '-', f"{el['message']}:", el['trigger']]))
+
+    print(str_alerts)
+    return JsonResponse({"alerts": str_alerts})
+
+
+
+def get_alert_data_from_api():
+    cached = cache.get(f'fastapi_alerts')
+    if cached:
+        return cached
+    
+    try:
+        response = requests.get("http://localhost:8000/api/alerts", timeout=90)
+        if response.status_code == 200:
+            data = response.json()
+            result = data['alert_data']
+            cache.set(f'fastapi_alerts', data['alert_data'], timeout=60)  # кешуємо на 60 секунд
+            return result
+    except requests.exceptions.RequestException as e:
+        print(f"Error connecting to FastAPI: {e}")
+    return []
 
 
 

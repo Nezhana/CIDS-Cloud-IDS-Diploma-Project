@@ -12,6 +12,10 @@ def get_alerts():
     logs_alert = Alert_Generator(logs_df)
 
     alert_data = logs_alert.get_alert_data()
+    # formated_alert_data = {}
+    # for key, item in alert_data.items():
+    #     formated_alert_data[key] = item.to_dict()
     
+    # return {"alert_data": formated_alert_data}
     return {"alert_data": alert_data}
 
