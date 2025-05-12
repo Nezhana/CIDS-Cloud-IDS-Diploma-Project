@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'main',
     'cids_dashboard',
+    'cids_log_list',
+    'cids_alerts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

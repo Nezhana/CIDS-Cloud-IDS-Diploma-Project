@@ -9,7 +9,7 @@ FASTAPI_URL = "http://localhost:8000/api/analyze"
 DATA_TYPES = ['summary_by_date', 'get_last_log_data', 'summary_for_gets_by_IP', 'get_malicious_ip_list']
 
 def dashboard(request):
-    return render(request, 'main/index.html')
+    return render(request, 'cids_dashboard/dashboard.html')
 
 
 def get_logs_data_from_api(data_type):
@@ -19,7 +19,7 @@ def get_logs_data_from_api(data_type):
         return cached
 
     try:
-        response = requests.get("http://localhost:8000/api/analyze", timeout=90)
+        response = requests.get(FASTAPI_URL, timeout=90)
         if response.status_code == 200:
             data = response.json()
             result = data['analysis_data'][data_type]
@@ -32,6 +32,8 @@ def get_logs_data_from_api(data_type):
 
 def api_event_data(request):
     summary_by_date = get_logs_data_from_api('summary_by_date')
+
+    print(summary_by_date)
 
     data = {"labels": [], 'values': []}
     for col in summary_by_date:

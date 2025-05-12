@@ -1,0 +1,110 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+
+{% block title %}CIDS Log List{% endblock %}
+
+{% block content %}
+<main class="loglist">
+    <header class="loglist-header">
+      <h1>LOG LIST</h1>
+    </header>
+    <div class="loglist-body">
+      <section class="loglist-table" style="justify-items: end;">
+        <!-- Фільтр -->
+        <div class="filter-controls">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.384613 0.5V2.42308L6.53846 8.57692H11.1538L17.1154 2.42308V0.5H0.384613Z" fill="#6DA5C0"/>
+            <path d="M6.53846 9.73077H11.1538V18L6.53846 15.5V9.73077Z" fill="#6DA5C0"/>
+          </svg>
+          <input type="text" id="filterInput" placeholder="Type to filter..." onkeyup="filterTable()" />
+        </div>
+        <div class="table-wrapper">
+          <table id="logTable" class="auto-table">
+            <thead>
+              <tr>
+                {% for header in headers %}
+                <th onclick="sortTable({{ forloop.counter0 }})">
+                  {{ header }}
+                  <span class="sort-indicator"></span>
+                </th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for value in values.values %}
+              <tr>
+                {% for el in value %}
+                <td>
+                  <div class="tooltip-container" onclick="toggleTooltip(this)">
+                    <span class="truncated-text">{{ el }}</span>
+                    <div class="tooltip-box">{{ el }}</div>
+                  </div>
+                </td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+            <script>
+              function toggleTooltip(container) {
+                document.querySelectorAll('.tooltip-container.active').forEach(el => {
+                  if (el !== container) el.classList.remove('active');
+                });
+            
+                container.classList.toggle('active');
+              }
+            
+              document.addEventListener('click', function (event) {
+                const isTooltip = event.target.closest('.tooltip-container');
+                if (!isTooltip) {
+                  document.querySelectorAll('.tooltip-container.active').forEach(el => {
+                    el.classList.remove('active');
+                  });
+                }
+              });
+            </script>
+          </table>
+          <script>
+            let sortDirection = {}; // Зберігає напрямок сортування по колонках
+          
+            function sortTable(colIndex) {
+              const table = document.getElementById("logTable");
+              const tbody = table.tBodies[0];
+              const rows = Array.from(tbody.rows);
+              const isAsc = sortDirection[colIndex] = !sortDirection[colIndex]; // toggle
+          
+              rows.sort((a, b) => {
+                const cellA = a.cells[colIndex].innerText.trim().toLowerCase();
+                const cellB = b.cells[colIndex].innerText.trim().toLowerCase();
+          
+                if (!isNaN(cellA) && !isNaN(cellB)) {
+                  return isAsc ? cellA - cellB : cellB - cellA;
+                }
+          
+                return isAsc ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+              });
+          
+              rows.forEach(row => tbody.appendChild(row)); // оновлюємо порядок
+          
+              // Оновлюємо стрілочки
+              document.querySelectorAll("th .sort-indicator").forEach(el => el.textContent = "");
+              const arrow = isAsc ? "▲" : "▼";
+              table.tHead.rows[0].cells[colIndex].querySelector(".sort-indicator").textContent = arrow;
+            }
+          
+            function filterTable() {
+              const input = document.getElementById("filterInput").value.toLowerCase();
+              const table = document.getElementById("logTable");
+              const rows = table.tBodies[0].rows;
+          
+              for (let row of rows) {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(input) ? "" : "none";
+              }
+            }
+          </script>
+        </div>
+      </section>
+    </div>
+</main>
+
+{% endblock %}

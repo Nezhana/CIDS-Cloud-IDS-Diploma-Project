@@ -187,6 +187,17 @@ document.addEventListener('DOMContentLoaded', async function () {
   const requestsLoader = document.getElementById('requests-loader');
   const alertsLoader = document.getElementById('alerts-loader');
 
+  fetchDashboardData()
+
+});
+
+async function fetchDashboardData() {
+
+  const chartLoader = document.getElementById('chart-loader');
+  const logsLoader = document.getElementById('logs-loader');
+  const requestsLoader = document.getElementById('requests-loader');
+  const alertsLoader = document.getElementById('alerts-loader');
+  
   try {
       // Показуємо лоадери
       chartLoader.style.display = 'block';
@@ -227,7 +238,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       // Прибрати лоадери після завантаження
       alertsLoader.style.display = 'none';
   }
-});
+}
+
 
 let chartInstance;
 
@@ -314,8 +326,15 @@ function renderAlerts(alerts) {
   console.log('Rendering alerts...', alerts);
 }
 
+function updateLogTime() {
+  const now = new Date();
+  const formatted = now.toLocaleString();
+  document.getElementById("last-updated").innerText = formatted;
+}
 
-
+updateLogTime();
+setInterval(updateLogTime, 300000); //every 300 seconds
+setInterval(fetchDashboardData, 300000); //every 300 seconds
 
 
 

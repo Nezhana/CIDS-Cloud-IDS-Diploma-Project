@@ -11,13 +11,13 @@ def get_analysis():
     logs_df = logs_collector.get_log_data_in_DF()
     logs_analysis = analyzer.Logs_Analysis(logs_df)
 
-    print(logs_analysis.summary_by_date())
+    print(logs_analysis.summary_by_date_v2())
     print(logs_analysis.get_last_log_data())
     print(logs_analysis.summary_for_gets_by_IP())
-    print(logs_analysis.get_malicious_ip_list())
+    # print(logs_analysis.get_malicious_ip_list())
 
     analysis_data = {
-        'summary_by_date': logs_analysis.summary_by_date(),
+        'summary_by_date': logs_analysis.summary_by_date_v2(),
         'get_last_log_data': logs_analysis.get_last_log_data(),
         'summary_for_gets_by_IP':logs_analysis.summary_for_gets_by_IP(),
         'get_malicious_ip_list': logs_analysis.get_malicious_ip_list()}

@@ -24,4 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('dashboard/', include('cids_dashboard.urls')),
+    path('loglist/', include('cids_log_list.urls')),
+    path('alerts/', include('cids_alerts.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

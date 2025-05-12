@@ -66,8 +66,23 @@ class Logs_Analysis():
             sum_by_date_lst.append(res)
         return sum_by_date_lst
     
+    
+    def summary_by_date_v2(self):
+        date_list = []
+        sum_by_date_dct = {}
+        for date in self.logs_df['Time']:
+            fdate = datetime.strptime(date, "[%d/%b/%Y:%H:%M:%S")
+            fix_date = fdate.strftime('%d/%m/%y')
+            if fix_date not in date_list:
+                date_list.append(fix_date)
+                sum_by_date_dct[fix_date] = 0
+            sum_by_date_dct[fix_date] += 1
+        sum_by_date_lst = [[ndate, str(val)] for ndate, val in sum_by_date_dct.items()]
+        return sum_by_date_lst
+    
+    
     def get_last_log_data(self):
-        sorted_by_date = self.logs_df.sort_values('Time')
+        sorted_by_date = self.logs_df.sort_values(by='Time', ascending=False)
         first_seven_logs = sorted_by_date.head(7)
         logs_lst = df_result_to_list(first_seven_logs[['Time', 'Remote_IP', 'Operation']])
         formated_logs = []

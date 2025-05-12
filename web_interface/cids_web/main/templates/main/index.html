@@ -1,67 +1,32 @@
+{% extends 'main/layout.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CIDS Dashboard</title>
-  <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <div class="container">
-    <aside class="sidebar">
-      <div class="logo"><img src="{% static 'main/images/logo.png' %}"></div>
-      <nav>
-        <ul>
-          <li class="active">Dashboard</li>
-          <li>Logs List</li>
-          <li>Alerts</li>
-          <li>Reports</li>
-        </ul>
-      </nav>
-      <div class="about">About Us</div>
-    </aside>
-    <main class="dashboard">
-      <header class="dashboard-header">
-        <h1>DASHBOARD</h1>
+{% block title %}CIDS Dashboard{% endblock %}
+
+{% block content %}
+
+    <main class="main-page">
+      <header class="main-page-header">
+        <h1>CIDS</h1>
+        <p><b>CIDS</b> - це система відслідковування подій (аномальної поведінки та можливих атак) у хмарному сховищі підприємства. Завдяки зручному відображенню статистичних даних та попереджень, цей застосунок допомагає оперативно виявляти підозрілу активність у AWS Cloud S3 сховищах.</p>
       </header>
-      <div class="event-data">
-        <section class="event-statistics">
-          <h2>Event Statistics</h2>
-          <div>
-            <div id="chart-loader" style="background: none; height: 0px;">Loading chart...</div>
-            <canvas id="eventChart"></canvas>
-          </div>
-        </section>
-        <section>
-          <div class="last-updated">
-            <h3>LAST TIME UPDATED</h3>
-            <p>22/04/2025 16:40:25</p>
-          </div>
-          <div class="log-data">
-            <h2>THE LAST LOG DATA</h2>
-            <div id="logs-loader">Loading logs...</div>
-            <ul id="logList"></ul>
-          </div>
-        </section>
-      </div>
-      <div class="separator"></div>
-      <div class="bottom-panels">
-        <section class="top-requests">
-          <h2>Top Requests</h2>
-          <div id="requests-loader">Loading requests...</div>
-          <ul id="topRequests"></ul>
-        </section>
-        <section class="sent-alerts">
-          <h2>Sent Alerts</h2>
-          <div id="alerts-loader">Loading alerts...</div>
-          <ul id="alertsList"></ul>
-        </section>
+      <div class="about-body">
+        <div class="about-data">
+          <section class="about-section">
+            <img src="{% static 'main/images/icon_dash.png' %}">
+            <p><b>Dashboard</b> - це основний розділ, що надає наочну агреговану інформацію про події у хмарі. Тут знаходиться діаграма частоти запитів, останні логи, а також дві вибірки: топ GET-запитів за IP-адресами та попередження, про ймовірні атаки.</p>
+          </section>
+          <section class="about-section">
+            <img src="{% static 'main/images/icon_log.png' %}">
+            <p><b>Logs List</b> містить повну інформацію про всі логи подій. Дані подані у вигляді таблиці, яку можна відсортувати або фільтрувати по ключовому слову.</p>
+          </section>
+          <section class="about-section">
+            <img src="{% static 'main/images/icon_alert.png' %}">
+            <p><b>Alerts</b> - це сторінка з попередженнями, які було надіслано користувачу через Telegram Bot. Усі попередження містять час, повідомлення та тригер, завдяки чому можна легко виявити та попередити атаки на хмарне сховище.</p>
+          </section>
+        </div>
       </div>
     </main>
   </div>
-  <script src="{% static 'js/dashboard.js' %}"></script>
-</body>
-</html>
+
+{% endblock %}

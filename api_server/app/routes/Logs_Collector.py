@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+import time
 from app.services.S3_Logs_Collector import Logs_Collector
 
 router = APIRouter()

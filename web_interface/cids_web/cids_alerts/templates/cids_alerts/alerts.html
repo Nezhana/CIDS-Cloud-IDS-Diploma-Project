@@ -1,0 +1,96 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+
+{% block title %}CIDS Alerts{% endblock %}
+
+{% block content %}
+<main class="alerts">
+    <header class="alerts-header">
+      <h1>ALERTS</h1>
+    </header>
+    <div class="alerts-body">
+      <section class="alerts-table">
+        <div class="container">
+            <ul class="alerts-responsive-table">
+              <li class="alerts-table-header">
+                <div class="col col-1">ID</div>
+                <div class="col col-2">Time</div>
+                <div class="col col-3">Message</div>
+                <div class="col col-4">Trigger</div>
+              </li>
+              <li class="alerts-table-row">
+                <div class="col col-1" data-label="Alert ID">1</div>
+                <div class="col col-2" data-label="Time">17/03/2025 11:20:00</div>
+                <div class="col col-3" data-label="Message">Malicious IP address detected</div>
+                <div class="col col-4" data-label="Trigger">112.132.11.56</div>
+              </li>
+              <li class="alerts-table-row">
+                <div class="col col-1" data-label="Alert ID">2</div>
+                <div class="col col-2" data-label="Time">16/03/2025 12:20:00</div>
+                <div class="col col-3" data-label="Message">Malicious IP address detected</div>
+                <div class="col col-4" data-label="Trigger">112.132.11.56</div>
+              </li>
+              <li class="alerts-table-row">
+                <div class="col col-1" data-label="Alert ID">3</div>
+                <div class="col col-2" data-label="Time">16/03/2025 12:40:00</div>
+                <div class="col col-3" data-label="Message">DDoS Warning</div>
+                <div class="col col-4" data-label="Trigger">111.111.11.111 exceeded requests</div>
+              </li>
+              <li class="alerts-table-row">
+                <div class="col col-1" data-label="Alert ID">4</div>
+                <div class="col col-2" data-label="Time">14/03/2025 16:44:00</div>
+                <div class="col col-3" data-label="Message">Access Denied</div>
+                <div class="col col-4" data-label="Trigger">Unknown user agent</div>
+              </li>
+            </ul>
+          </div>
+
+
+        <!-- <div class="table-wrapper">
+          <table class="auto-table">
+            <thead>
+              <tr>
+                {% for header in headers %}
+                <th>{{ header }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for value in values.values %}
+              <tr>
+                {% for el in value %}
+                <td>
+                  <div class="tooltip-container" onclick="toggleTooltip(this)">
+                    <span class="truncated-text">{{ el }}</span>
+                    <div class="tooltip-box">{{ el }}</div>
+                  </div>
+                </td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+            <script>
+              function toggleTooltip(container) {
+                document.querySelectorAll('.tooltip-container.active').forEach(el => {
+                  if (el !== container) el.classList.remove('active');
+                });
+            
+                container.classList.toggle('active');
+              }
+            
+              document.addEventListener('click', function (event) {
+                const isTooltip = event.target.closest('.tooltip-container');
+                if (!isTooltip) {
+                  document.querySelectorAll('.tooltip-container.active').forEach(el => {
+                    el.classList.remove('active');
+                  });
+                }
+              });
+            </script>
+          </table>
+        </div> -->
+      </section>
+    </div>
+</main>
+
+{% endblock %}
